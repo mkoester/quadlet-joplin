@@ -1,0 +1,39 @@
+[Unit]
+Description=Joplin Server — self-hosted sync server for Joplin notes
+After=network-online.target joplin-db.service
+Wants=network-online.target
+Requires=joplin-db.service
+
+[Container]
+Image=docker.io/joplin/server:latest
+AutoUpdate=registry
+
+# The Joplin Dockerfile creates a 'joplin' user with useradd after the base
+# node image's 'node' user (UID 1000), so joplin typically gets UID 1001.
+# Verify: podman inspect docker.io/joplin/server:latest --format '{{.Config.User}}'
+# then: podman run --rm --entrypoint grep docker.io/joplin/server:latest joplin /etc/passwd
+UserNS=keep-id:uid=1001,gid=1001
+User=1001
+Group=1001
+
+Network=joplin.network
+
+# Environment variables
+EnvironmentFile=%h/.config/containers/systemd/joplin.env
+EnvironmentFile=%h/.config/containers/systemd/joplin.override.env
+
+# Port mapping — bind to localhost; reverse proxy handles TLS
+PublishPort=127.0.0.1:22300:22300
+
+# Health check
+HealthCmd=curl -f http://localhost:22300/api/ping || exit 1
+HealthInterval=30s
+HealthTimeout=10s
+HealthRetries=3
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target
