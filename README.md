@@ -125,7 +125,7 @@ The backup runs `pg_dump` inside the database container and writes a SQL dump to
 # 1. Create backup staging directory (owned by joplin, readable by backup-readers group)
 sudo mkdir -p /var/backups/joplin
 sudo chown joplin:backup-readers /var/backups/joplin
-sudo chmod 750 /var/backups/joplin
+sudo chmod 2750 /var/backups/joplin
 
 # 2. Symlink the backup service and timer from the repo
 sudo -u joplin mkdir -p ~joplin/.config/systemd/user
