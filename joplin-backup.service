@@ -3,4 +3,5 @@ Description=Joplin backup (PostgreSQL database)
 
 [Service]
 Type=oneshot
+UMask=0027
 ExecStart=/bin/sh -c '/usr/bin/podman exec systemd-joplin-db pg_dump -U joplin joplin > /var/backups/joplin/joplin.sql'
